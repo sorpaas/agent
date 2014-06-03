@@ -92,7 +92,7 @@ Will JSON serialize any ```data``` and send it along as the HTTP body.
 
 Will start the request and call ```done``` when it's complete.
 
-If there was an error then ```$0``` will be an NSError that you can inspect for
+If there was an error then ```$0``` will be an ```NSErrror``` that you can inspect for
 more information.
 
 If the request was successful then ```$1``` will be an ```NSURLResponse```.

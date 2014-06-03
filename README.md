@@ -89,8 +89,7 @@ req.end({ (error: NSError?, response: NSURLResponse?) -> () in
 #### ```DELETE(url: String)```
 
 ```swift
-let req = Agent.put("http://example.com")
-req.send([ "Key": "Value" ])
+let req = Agent.delete("http://example.com")
 req.end({ (error: NSError?, response: NSURLResponse?) -> () in
   if (error) {
     return

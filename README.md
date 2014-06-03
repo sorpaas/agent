@@ -22,7 +22,9 @@ required parameters when first creating the request. There are usually multiple
 degrees of overloading.
 
 ```swift
-Agent.post("http://example.com", headers: [ "Header": "Value" ], data: [ "Key": "Value" ], done: { (error: NSError?, response: NSURLResponse?) -> () in
+Agent.post("http://example.com", headers: [ "Header": "Value" ],
+                                    data: [ "Key": "Value" ],
+                                    done: { (error: NSError?, response: NSHTTPURLResponse?) -> () in
   if (error) {
     return
   }
@@ -38,12 +40,15 @@ Every Agent method returns the Agent itself, therefor it is possible to write
 more expressive code.
 
 ```swift
-Agent.post("http://example.com").send([ "Key": "Value" ]).end({ (error: NSError?, response: NSURLResponse?) -> () in
-  if (error) {
-    return
+Agent.post("http://example.com")
+  .send([ "Key": "Value" ])
+  .end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
+    if (error) {
+      return
+    }
+    println(response!)
   }
-  println(response!)
-})
+)
 ```
 
 ### Verbs
@@ -52,7 +57,7 @@ Agent.post("http://example.com").send([ "Key": "Value" ]).end({ (error: NSError?
 
 ```swift
 let req = Agent.get("http://example.com")
-req.end({ (error: NSError?, response: NSURLResponse?) -> () in
+req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
   if (error) {
     return
   }
@@ -65,7 +70,7 @@ req.end({ (error: NSError?, response: NSURLResponse?) -> () in
 ```swift
 let req = Agent.post("http://example.com")
 req.send([ "Key": "Value" ])
-req.end({ (error: NSError?, response: NSURLResponse?) -> () in
+req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
   if (error) {
     return
   }
@@ -78,7 +83,7 @@ req.end({ (error: NSError?, response: NSURLResponse?) -> () in
 ```swift
 let req = Agent.put("http://example.com")
 req.send([ "Key": "Value" ])
-req.end({ (error: NSError?, response: NSURLResponse?) -> () in
+req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
   if (error) {
     return
   }
@@ -90,7 +95,7 @@ req.end({ (error: NSError?, response: NSURLResponse?) -> () in
 
 ```swift
 let req = Agent.delete("http://example.com")
-req.end({ (error: NSError?, response: NSURLResponse?) -> () in
+req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
   if (error) {
     return
   }
@@ -109,14 +114,14 @@ implicitly sets the ```Content-Type``` header to ```application/json```.
 
 Sets the HTTP ```header``` to ```value```.
 
-#### ```end(done: (NSError?, NSURLResponse?) -> ()) -> Agent```
+#### ```end(done: (NSError?, NSHTTPURLResponse?) -> ()) -> Agent```
 
 Will start the request and call ```done``` when it's complete.
 
 If there was an error then ```$0``` will be an ```NSErrror``` that you can inspect for
 more information.
 
-If the request was successful then ```$1``` will be an ```NSURLResponse```.
+If the request was successful then ```$1``` will be an ```NSHTTPURLResponse```.
 
 ### NSMutableURLRequest
 

@@ -11,9 +11,11 @@ import Agent
 
 class AgentTests: XCTestCase {
 
-  func testExample() {
+  func testExample () {
+    let data: Dictionary<String, AnyObject> = [ "Key": "Value" ]
     Agent.get("http://google.com")
-    Agent.post("http://google.com", data: [ "Key": "Value" ])
+    Agent.post("http://google.com", data: data)
+    Agent.post("http://google.com", data: data)
   }
 
 }

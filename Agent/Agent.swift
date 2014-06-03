@@ -14,7 +14,7 @@ class Agent: NSObject, NSURLConnectionDelegate {
   var connection: NSURLConnection? = nil
   
   // No-op default callback
-  var done: (Agent, NSURLResponse) -> () = { (req: Agent, res: NSURLResponse) -> () in }
+  var done: (NSError?, NSURLResponse) -> () = { (_: NSError?, _: NSURLResponse) -> () in }
   
   init (method: String, url: String) {
     super.init()
@@ -25,20 +25,37 @@ class Agent: NSObject, NSURLConnectionDelegate {
   }
   
   class func get (url: String) -> Agent {
-    return Agent(method: "GET", url:url)
+    return Agent(method: "GET", url: url)
   }
   
-  class func get (url: String, done: (Agent, NSURLResponse) -> ()) {
-    Agent.get(url).end(done)
+  class func get (url: String, done: (NSError?, NSURLResponse) -> ()) -> Agent {
+    return Agent.get(url).end(done)
   }
   
-  func end (done: (Agent, NSURLResponse) -> ()) {
+  class func post (url: String, data: Dictionary<String, AnyObject>) -> Agent {
+    return Agent(method: "POST", url: url).send(data)
+  }
+  
+  class func post (url: String, data: Dictionary<String, AnyObject>, done: (NSError?, NSURLResponse) -> ()) -> Agent {
+    return Agent.post(url, data: data).end(done)
+  }
+
+  func send (data: Dictionary<String, AnyObject>) -> Agent {
+    var error: NSError?
+    var json = NSJSONSerialization.dataWithJSONObject(data, options: NSJSONWritingOptions(0), error: &error)
+    // TODO: handle error
+    self.request!.HTTPBody = json
+    return self
+  }
+  
+  func end (done: (NSError?, NSURLResponse) -> ()) -> Agent {
     self.done = done
     self.connection!.start()
+    return self
   }
   
   func connection (connection: NSURLConnection!, didReceiveResponse response: NSURLResponse!) {
-    self.done(self, response)
+    self.done(nil, response)
   }
   
 }

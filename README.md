@@ -88,7 +88,7 @@ req.end({ (error: NSError?, response: NSURLResponse?) -> () in
 
 Will JSON serialize any ```data``` and send it along as the HTTP body.
 
-#### ```end(done: (NSError?, NSURLResponse) -> ())```
+#### ```end(done: (NSError?, NSURLResponse?) -> ())```
 
 Will start the request and call ```done``` when it's complete.
 

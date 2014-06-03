@@ -129,6 +129,7 @@ We're happy to receive any pull requests. Right now we're working hard on a
 number of features as seen below.
 
 - Complete asynchronous tests
+- Reading response data
 - Plugins
 - Specialized agents (to handle default headers and such)
 

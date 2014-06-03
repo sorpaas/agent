@@ -8,6 +8,8 @@ This is a tiny framework that gives you nice a API for crafting an HTTP request.
 
 ## Usage
 
+Throughout this documentation ```req``` is used as an instance of Agent.
+
 ### HTTP Verbs
 
 The Agent API is simple and easy to use. Simply use ```Agent.<verb>(url)``` and
@@ -20,13 +22,15 @@ required parameters when first creating the request. There are usually multiple
 degrees of overloading.
 
 ```swift
-Agent.post("http://example.com", [ "Key": "Value" ], { (error: NSError?, response: NSURLResponse?) -> () in
+Agent.post("http://example.com", headers: [ "Header": "Value" ], data: [ "Key": "Value" ], done: { (error: NSError?, response: NSURLResponse?) -> () in
   if (error) {
     return
   }
   println(response!)
 })
 ```
+
+It's possible to omit must overloaded parameters such as ```headers```.
 
 ### Method Chaining
 
@@ -82,13 +86,31 @@ req.end({ (error: NSError?, response: NSURLResponse?) -> () in
 })
 ```
 
+#### ```DELETE(url: String)```
+
+```swift
+let req = Agent.put("http://example.com")
+req.send([ "Key": "Value" ])
+req.end({ (error: NSError?, response: NSURLResponse?) -> () in
+  if (error) {
+    return
+  }
+  println(response!)
+})
+```
+
 ### Methods
 
-#### ```send(data: Dictionary<String, AnyObject>)```
+#### ```send(data: Dictionary<String, AnyObject>) -> Agent```
 
-Will JSON serialize any ```data``` and send it along as the HTTP body.
+Will JSON serialize any ```data``` and send it along as the HTTP body. Also
+implicitly sets the ```Content-Type``` header to ```application/json```.
 
-#### ```end(done: (NSError?, NSURLResponse?) -> ())```
+#### ```set(header: String, value: String) -> Agent```
+
+Sets the HTTP ```header``` to ```value```.
+
+#### ```end(done: (NSError?, NSURLResponse?) -> ()) -> Agent```
 
 Will start the request and call ```done``` when it's complete.
 
@@ -96,6 +118,11 @@ If there was an error then ```$0``` will be an ```NSErrror``` that you can inspe
 more information.
 
 If the request was successful then ```$1``` will be an ```NSURLResponse```.
+
+### NSMutableURLRequest
+
+You can always access the underlying ```NSMutableURLRequest```
+using ```req.request!```, please notice that it is an optional.
 
 ## Contributing
 
@@ -106,11 +133,13 @@ number of features as seen below.
 - Plugins
 - Specialized agents (to handle default headers and such)
 
+Any issue is appreciated.
+
 ## License
 
 (The MIT License)
 
-Copyright (c) 2014 ChristoffeR Hallas <christoffer.hallas@gmail.com>
+Copyright (c) 2014 Christoffer Hallas &lt;christoffer.hallas@gmail.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

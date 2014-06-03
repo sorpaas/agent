@@ -11,11 +11,43 @@ import Agent
 
 class AgentTests: XCTestCase {
 
-  func testExample () {
-    let data: Dictionary<String, AnyObject> = [ "Key": "Value" ]
-    Agent.get("http://google.com")
-    Agent.post("http://google.com", data: data)
-    Agent.post("http://google.com", data: data)
+  func waitFor (inout wait: Bool) {
+    while (wait) {
+      NSRunLoop.currentRunLoop().runMode(NSDefaultRunLoopMode, beforeDate: NSDate(timeIntervalSinceNow: 0.1))
+    }
+  }
+
+  func testGetShouldSucceed () {
+    var wait: Bool = true
+    Agent.get("http://headers.jsontest.com", done: { (error: NSError?, response: NSHTTPURLResponse?) -> () in
+      if (error) {
+        return
+      }
+      XCTAssertEqual(response!.statusCode, 200)
+      wait = false
+    })
+    waitFor(&wait)
+  }
+
+  func testGetShouldSucceedWith404 () {
+    var wait: Bool = true
+    Agent.get("http://example.com/non-existing-path", done: { (error: NSError?, response: NSHTTPURLResponse?) -> () in
+      if (error) {
+        return
+      }
+      XCTAssertEqual(response!.statusCode, 404)
+      wait = false
+    })
+    waitFor(&wait)
+  }
+
+  func testGetShouldFail () {
+    var wait: Bool = true
+    Agent.get("http://nope.christofferhallas.com", done: { (error: NSError?, response: NSHTTPURLResponse?) -> () in
+      XCTAssertNotNil(error)
+      wait = false
+    })
+    waitFor(&wait)
   }
 
 }

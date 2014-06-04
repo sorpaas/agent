@@ -19,7 +19,8 @@ class AgentTests: XCTestCase {
 
   func testGetShouldSucceed () {
     var wait: Bool = true
-    Agent.get("http://headers.jsontest.com", done: { (error: NSError?, response: NSHTTPURLResponse?) -> () in
+    Agent.get("http://headers.jsontest.com",
+      done: { (error: NSError?, response: NSHTTPURLResponse?, _) -> () in
       if (error) {
         return
       }
@@ -31,7 +32,8 @@ class AgentTests: XCTestCase {
 
   func testGetShouldSucceedWith404 () {
     var wait: Bool = true
-    Agent.get("http://example.com/non-existing-path", done: { (error: NSError?, response: NSHTTPURLResponse?) -> () in
+    Agent.get("http://example.com/non-existing-path",
+        done: { (error: NSError?, response: NSHTTPURLResponse?, _) -> () in
       if (error) {
         return
       }
@@ -43,7 +45,8 @@ class AgentTests: XCTestCase {
 
   func testGetShouldFail () {
     var wait: Bool = true
-    Agent.get("http://nope.christofferhallas.com", done: { (error: NSError?, response: NSHTTPURLResponse?) -> () in
+    Agent.get("http://nope.christofferhallas.com",
+        done: { (error: NSError?, response: NSHTTPURLResponse?, _) -> () in
       XCTAssertNotNil(error)
       wait = false
     })

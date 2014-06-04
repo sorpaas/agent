@@ -170,7 +170,6 @@ class Agent: NSObject {
   }
 
   func connection(connection: NSURLConnection!, didReceiveResponse response: NSHTTPURLResponse!) {
-    println("response")
     self.response = response
   }
   
@@ -182,7 +181,6 @@ class Agent: NSObject {
   }
   
   func connection(connection: NSURLConnection!, didFailWithError error: NSError!) {
-    println("fail?")
     self.done(error, nil, nil)
   }
 

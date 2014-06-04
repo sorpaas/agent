@@ -22,14 +22,11 @@ required parameters when first creating the request. There are usually multiple
 degrees of overloading.
 
 ```swift
+let done = { (error: NSError?, response: NSHTTPURLResponse?, data: AnyObject?) -> () in
+  // react to the result of your request
+};
 Agent.post("http://example.com", headers: [ "Header": "Value" ],
-                                    data: [ "Key": "Value" ],
-                                    done: { (error: NSError?, response: NSHTTPURLResponse?) -> () in
-  if (error) {
-    return
-  }
-  println(response!)
-})
+  data: [ "Key": "Value" ], done: done)
 ```
 
 It's possible to omit must overloaded parameters such as ```headers```.
@@ -42,13 +39,26 @@ more expressive code.
 ```swift
 Agent.post("http://example.com")
   .send([ "Key": "Value" ])
-  .end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
-    if (error) {
-      return
-    }
-    println(response!)
+  .end({ (error: NSError?, response: NSHTTPURLResponse?, data: AnyObject?) -> () in
+    // react to the result of your request
   }
 )
+```
+
+### Response Closure
+
+One of the features that makes Agent is the response closure, instead of
+setting up a delegate for every HTTP request you have to make. You can simply
+react to response in a closure.
+
+In Agent, the response is of the type ```(NSError?, NSHTTPURLResponse?, AnyObject?)```.
+A response closure that reads JSON is easily created as seen below.
+
+```swift
+let done = { (error: NSError?, response: NSHTTPURLResponse?, data: AnyObject?) -> () in
+  let json = data! as Dictionary<String, String>
+  println(json["Key"]!)
+}
 ```
 
 ### Verbs
@@ -57,11 +67,8 @@ Agent.post("http://example.com")
 
 ```swift
 let req = Agent.get("http://example.com")
-req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
-  if (error) {
-    return
-  }
-  println(response!)
+req.end({ (error: NSError?, response: NSHTTPURLResponse?, data: AnyObject?) -> () in
+  // react to the result of your request
 })
 ```
 
@@ -70,11 +77,8 @@ req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
 ```swift
 let req = Agent.post("http://example.com")
 req.send([ "Key": "Value" ])
-req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
-  if (error) {
-    return
-  }
-  println(response!)
+req.end({ (error: NSError?, response: NSHTTPURLResponse?, data: AnyObject?) -> () in
+  // react to the result of your request
 })
 ```
 
@@ -83,11 +87,8 @@ req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
 ```swift
 let req = Agent.put("http://example.com")
 req.send([ "Key": "Value" ])
-req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
-  if (error) {
-    return
-  }
-  println(response!)
+req.end({ (error: NSError?, response: NSHTTPURLResponse?, data: AnyObject?) -> () in
+  // react to the result of your request
 })
 ```
 
@@ -95,11 +96,8 @@ req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
 
 ```swift
 let req = Agent.delete("http://example.com")
-req.end({ (error: NSError?, response: NSHTTPURLResponse?) -> () in
-  if (error) {
-    return
-  }
-  println(response!)
+req.end({ (error: NSError?, response: NSHTTPURLResponse?, data: AnyObject?) -> () in
+  // react to the result of your request
 })
 ```
 
@@ -114,14 +112,15 @@ implicitly sets the ```Content-Type``` header to ```application/json```.
 
 Sets the HTTP ```header``` to ```value```.
 
-#### ```end(done: (NSError?, NSHTTPURLResponse?) -> ()) -> Agent```
+#### ```end(done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent```
 
 Will start the request and call ```done``` when it's complete.
 
-If there was an error then ```$0``` will be an ```NSErrror``` that you can inspect for
+- If there was an error then ```$0``` will be an ```NSErrror``` that you can inspect for
 more information.
-
-If the request was successful then ```$1``` will be an ```NSHTTPURLResponse```.
+- If the request was successful then ```$1``` will be an ```NSHTTPURLResponse```.
+- If the response had any data, ```$2``` will be an ```AnyObject``` that you can
+type cast to either an ```Array``` or ```Dictionary```.
 
 ### NSMutableURLRequest
 
@@ -134,7 +133,6 @@ We're happy to receive any pull requests. Right now we're working hard on a
 number of features as seen below.
 
 - Complete asynchronous tests
-- Reading response data
 - Plugins
 - Specialized agents (to handle default headers and such)
 

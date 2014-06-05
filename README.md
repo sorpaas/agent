@@ -4,7 +4,7 @@ Minimalistic Swift HTTP request agent for iOS and OS X.
 
 ## Introduction
 
-This is a tiny framework that gives you nice a API for crafting an HTTP request.
+This is a tiny framework that gives you nice a API for crafting HTTP requests.
 
 ## Usage
 
@@ -17,7 +17,7 @@ you're good to go.
 
 ### Overloading
 
-It is possible to perform an entire request with a single call. Supply the
+It's possible to perform an entire request with a single call. Supply the
 required parameters when first creating the request. There are usually multiple
 degrees of overloading.
 
@@ -29,11 +29,11 @@ Agent.post("http://example.com", headers: [ "Header": "Value" ],
   data: [ "Key": "Value" ], done: done)
 ```
 
-It's possible to omit must overloaded parameters such as ```headers```.
+It's possible to omit most overloaded parameters such as ```headers```.
 
 ### Method Chaining
 
-Every Agent method returns the Agent itself, therefor it is possible to write
+Every Agent method returns the Agent itself, therefore it is possible to write
 more expressive code.
 
 ```swift
@@ -49,7 +49,7 @@ Agent.post("http://example.com")
 
 One of the features that makes Agent is the response closure, instead of
 setting up a delegate for every HTTP request you have to make. You can simply
-react to response in a closure.
+react to the response in a closure.
 
 In Agent, the response is of the type ```(NSError?, NSHTTPURLResponse?, AnyObject?)```.
 A response closure that reads JSON is easily created as seen below.

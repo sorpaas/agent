@@ -1,3 +1,5 @@
+#### Slightly out of date. Will be updated.
+
 # Agent
 
 Minimalistic Swift HTTP request agent for iOS and OS X.

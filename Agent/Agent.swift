@@ -18,123 +18,162 @@ class Agent {
    * Members
    */
 
-  var request: NSMutableURLRequest
+  var baseURL: NSURL?
+  var headers: Headers?
+  var request: NSMutableURLRequest?
   let queue = NSOperationQueue()
 
   /**
    * Initialize
    */
+  
+  init(baseURL: String) {
+    self.baseURL = NSURL(string: baseURL)
+  }
+  
+  convenience init(baseURL: String, headers: Headers) {
+    self.init(baseURL: baseURL)
+    self.headers = headers
+  }
 
-  init(method: String, url: String, headers: Headers?) {
-    self.request = NSMutableURLRequest(URL: NSURL(string: url))
-    self.request.HTTPMethod = method;
-    if (headers) {
-      self.request.allHTTPHeaderFields = headers!
+  init(method: String, URL: String) {
+    self.request = NSMutableURLRequest(URL: NSURL(string: URL))
+    self.request!.HTTPMethod = method;
+    if (self.headers) {
+      self.request!.allHTTPHeaderFields = self.headers!
     }
+  }
+
+  convenience init(method: String, URL: String, headers: Headers) {
+    self.init(method: method, URL: URL)
+    self.request!.allHTTPHeaderFields = headers
+  }
+  
+  /**
+   * Request
+   */
+  
+  func request(method: String, URL: String) -> Agent {
+    var _URL: NSURL
+    if (self.baseURL) {
+      _URL = self.baseURL!.URLByAppendingPathComponent(URL)
+    } else {
+      _URL = NSURL(string: URL)
+    }
+    self.request = NSMutableURLRequest(URL: _URL)
+    self.request!.HTTPMethod = method;
+    if (self.headers) {
+      self.request!.allHTTPHeaderFields = self.headers!
+    }
+    return self
   }
 
   /**
    * GET
    */
 
-  class func get(url: String) -> Agent {
-    return Agent(method: "GET", url: url, headers: nil)
+  class func get(URL: String) -> Agent {
+    return Agent(method: "GET", URL: URL)
   }
 
-  class func get(url: String, headers: Headers) -> Agent {
-    return Agent(method: "GET", url: url, headers: headers)
+  class func get(URL: String, headers: Headers) -> Agent {
+    return Agent(method: "GET", URL: URL, headers: headers)
   }
 
-  class func get(url: String, done: Response) -> Agent {
-    return Agent.get(url).end(done)
+  class func get(URL: String, done: Response) -> Agent {
+    return Agent.get(URL).end(done)
   }
 
-  class func get(url: String, headers: Headers, done: Response) -> Agent {
-    return Agent.get(url, headers: headers).end(done)
+  class func get(URL: String, headers: Headers, done: Response) -> Agent {
+    return Agent.get(URL, headers: headers).end(done)
+  }
+  
+  func get(URL: String) -> Agent {
+    return self.request("GET", URL: URL)
   }
 
   /**
    * POST
    */
 
-  class func post(url: String) -> Agent {
-    return Agent(method: "POST", url: url, headers: nil)
+  class func post(URL: String) -> Agent {
+    return Agent(method: "POST", URL: URL)
   }
 
-  class func post(url: String, headers: Headers) -> Agent {
-    return Agent(method: "POST", url: url, headers: headers)
+  class func post(URL: String, headers: Headers) -> Agent {
+    return Agent(method: "POST", URL: URL, headers: headers)
   }
 
-  class func post(url: String, done: Response) -> Agent {
-    return Agent.post(url).end(done)
+  class func post(URL: String, done: Response) -> Agent {
+    return Agent.post(URL).end(done)
   }
 
-  class func post(url: String, headers: Headers, data: Data) -> Agent {
-    return Agent.post(url, headers: headers).send(data)
+  class func post(URL: String, headers: Headers, data: Data) -> Agent {
+    return Agent.post(URL, headers: headers).send(data)
   }
 
-  class func post(url: String, data: Data) -> Agent {
-    return Agent.post(url).send(data)
+  class func post(URL: String, data: Data) -> Agent {
+    return Agent.post(URL).send(data)
   }
 
-  class func post(url: String, data: Data, done: Response) -> Agent {
-    return Agent.post(url, data: data).send(data).end(done)
+  class func post(URL: String, data: Data, done: Response) -> Agent {
+    return Agent.post(URL, data: data).send(data).end(done)
   }
 
-  class func post(url: String, headers: Headers, data: Data, done: Response) -> Agent {
-    return Agent.post(url, headers: headers, data: data).send(data).end(done)
+  class func post(URL: String, headers: Headers, data: Data, done: Response) -> Agent {
+    return Agent.post(URL, headers: headers, data: data).send(data).end(done)
   }
 
   /**
    * PUT
    */
 
-  class func put(url: String) -> Agent {
-    return Agent(method: "PUT", url: url, headers: nil)
+  class func put(URL: String) -> Agent {
+    return Agent(method: "PUT", URL: URL)
   }
 
-  class func put(url: String, headers: Headers) -> Agent {
-    return Agent(method: "PUT", url: url, headers: headers)
+  class func put(URL: String, headers: Headers) -> Agent {
+    return Agent(method: "PUT", URL: URL, headers: headers)
   }
 
-  class func put(url: String, done: Response) -> Agent {
-    return Agent.put(url).end(done)
+  class func put(URL: String, done: Response) -> Agent {
+    return Agent.put(URL).end(done)
   }
 
-  class func put(url: String, headers: Headers, data: Data) -> Agent {
-      return Agent.put(url, headers: headers).send(data)
+  class func put(URL: String, headers: Headers, data: Data) -> Agent {
+      return Agent.put(URL, headers: headers).send(data)
   }
 
-  class func put(url: String, data: Data) -> Agent {
-    return Agent.put(url).send(data)
+  class func put(URL: String, data: Data) -> Agent {
+    return Agent.put(URL).send(data)
   }
 
-  class func put(url: String, data: Data, done: Response) -> Agent {
-    return Agent.put(url, data: data).send(data).end(done)
+  class func put(URL: String, data: Data, done: Response) -> Agent {
+    return Agent.put(URL, data: data).send(data).end(done)
   }
 
-  class func put(url: String, headers: Headers, data: Data, done: Response) -> Agent {
-    return Agent.put(url, headers: headers, data: data).send(data).end(done)
+  class func put(URL: String, headers: Headers, data: Data, done: Response) -> Agent {
+    return Agent.put(URL, headers: headers, data: data).send(data).end(done)
   }
 
   /**
    * DELETE
    */
 
-  class func delete(url: String) -> Agent {
-    return Agent(method: "DELETE", url: url, headers: nil)
+  class func delete(URL: String) -> Agent {
+    return Agent(method: "DELETE", URL: URL)
   }
 
-  class func delete(url: String, headers: Headers) -> Agent {
-    return Agent(method: "DELETE", url: url, headers: headers)
+  class func delete(URL: String, headers: Headers) -> Agent {
+    return Agent(method: "DELETE", URL: URL, headers: headers)
   }
 
-  class func delete(url: String, done: Response) -> Agent {
-    return Agent.delete(url).end(done)
+  class func delete(URL: String, done: Response) -> Agent {
+    return Agent.delete(URL).end(done)
   }
 
-  class func delete(url: String, headers: Headers, done: Response) -> Agent {
-    return Agent.delete(url, headers: headers).end(done)
+  class func delete(URL: String, headers: Headers, done: Response) -> Agent {
+    return Agent.delete(URL, headers: headers).end(done)
   }
 
   /**
@@ -145,12 +184,12 @@ class Agent {
     var error: NSError?
     let json = NSJSONSerialization.dataWithJSONObject(data, options: nil, error: &error)
     self.set("Content-Type", value: "application/json")
-    self.request.HTTPBody = json
+    self.request!.HTTPBody = json
     return self
   }
 
   func set(header: String, value: String) -> Agent {
-    self.request.setValue(value, forHTTPHeaderField: header)
+    self.request!.setValue(value, forHTTPHeaderField: header)
     return self
   }
 

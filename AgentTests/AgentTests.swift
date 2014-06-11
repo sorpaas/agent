@@ -85,5 +85,16 @@ class AgentTests: XCTestCase {
     Agent.delete("http://nope.example.com", done: done)
     waitFor(&wait)
   }
+  
+  func testGetSpecialAgent () {
+    var wait: Bool = true
+    let done = { (_: NSHTTPURLResponse!, data: Agent.Data!, error: NSError!) -> Void in
+      XCTAssertNil(error)
+      wait = false
+    }
+    let agent = Agent(baseURL: "https://api.github.com")
+    agent.get("/users").end(done)
+    waitFor(&wait)
+  }
 
 }

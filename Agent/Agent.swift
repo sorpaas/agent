@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Agent: NSObject {
+class Agent {
 
   /**
    * Members

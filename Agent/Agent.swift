@@ -10,25 +10,26 @@ import Foundation
 
 class Agent {
 
+  typealias Headers = Dictionary<String, String>
+  typealias Data = AnyObject!
+  typealias Response = (NSHTTPURLResponse!, Data!, NSError!) -> Void
+
   /**
    * Members
    */
 
-  var request: NSMutableURLRequest? = nil
-  var response: NSHTTPURLResponse? = nil
-  var data: NSMutableData? = nil
-  var done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> () = { (_, _, _) -> () in }
+  var request: NSMutableURLRequest
+  let queue = NSOperationQueue()
 
   /**
    * Initialize
    */
 
   init(method: String, url: String, headers: Dictionary<String, String>?) {
-    let _url = NSURL(string: url)
-    self.request = NSMutableURLRequest(URL: _url)
-    self.request!.HTTPMethod = method;
+    self.request = NSMutableURLRequest(URL: NSURL(string: url))
+    self.request.HTTPMethod = method;
     if (headers) {
-      self.request!.allHTTPHeaderFields = headers!
+      self.request.allHTTPHeaderFields = headers!
     }
   }
 
@@ -40,15 +41,15 @@ class Agent {
     return Agent(method: "GET", url: url, headers: nil)
   }
 
-  class func get(url: String, headers: Dictionary<String, String>) -> Agent {
+  class func get(url: String, headers: Headers) -> Agent {
     return Agent(method: "GET", url: url, headers: headers)
   }
 
-  class func get(url: String, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func get(url: String, done: Response) -> Agent {
     return Agent.get(url).end(done)
   }
 
-  class func get(url: String, headers: Dictionary<String, String>, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func get(url: String, headers: Headers, done: Response) -> Agent {
     return Agent.get(url, headers: headers).end(done)
   }
 
@@ -60,27 +61,27 @@ class Agent {
     return Agent(method: "POST", url: url, headers: nil)
   }
 
-  class func post(url: String, headers: Dictionary<String, String>) -> Agent {
+  class func post(url: String, headers: Headers) -> Agent {
     return Agent(method: "POST", url: url, headers: headers)
   }
 
-  class func post(url: String, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func post(url: String, done: Response) -> Agent {
     return Agent.post(url).end(done)
   }
 
-  class func post(url: String, headers: Dictionary<String, String>, data: Dictionary<String, AnyObject>) -> Agent {
+  class func post(url: String, headers: Headers, data: Data) -> Agent {
     return Agent.post(url, headers: headers).send(data)
   }
 
-  class func post(url: String, data: Dictionary<String, AnyObject>) -> Agent {
+  class func post(url: String, data: Data) -> Agent {
     return Agent.post(url).send(data)
   }
 
-  class func post(url: String, data: Dictionary<String, AnyObject>, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func post(url: String, data: Data, done: Response) -> Agent {
     return Agent.post(url, data: data).send(data).end(done)
   }
 
-  class func post(url: String, headers: Dictionary<String, String>, data: Dictionary<String, AnyObject>, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func post(url: String, headers: Headers, data: Data, done: Response) -> Agent {
     return Agent.post(url, headers: headers, data: data).send(data).end(done)
   }
 
@@ -92,27 +93,27 @@ class Agent {
     return Agent(method: "PUT", url: url, headers: nil)
   }
 
-  class func put(url: String, headers: Dictionary<String, String>) -> Agent {
+  class func put(url: String, headers: Headers) -> Agent {
     return Agent(method: "PUT", url: url, headers: headers)
   }
 
-  class func put(url: String, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func put(url: String, done: Response) -> Agent {
     return Agent.put(url).end(done)
   }
 
-  class func put(url: String, headers: Dictionary<String, String>, data: Dictionary<String, AnyObject>) -> Agent {
+  class func put(url: String, headers: Headers, data: Data) -> Agent {
       return Agent.put(url, headers: headers).send(data)
   }
 
-  class func put(url: String, data: Dictionary<String, AnyObject>) -> Agent {
+  class func put(url: String, data: Data) -> Agent {
     return Agent.put(url).send(data)
   }
 
-  class func put(url: String, data: Dictionary<String, AnyObject>, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func put(url: String, data: Data, done: Response) -> Agent {
     return Agent.put(url, data: data).send(data).end(done)
   }
 
-  class func put(url: String, headers: Dictionary<String, String>, data: Dictionary<String, AnyObject>, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func put(url: String, headers: Headers, data: Data, done: Response) -> Agent {
     return Agent.put(url, headers: headers, data: data).send(data).end(done)
   }
 
@@ -124,15 +125,15 @@ class Agent {
     return Agent(method: "DELETE", url: url, headers: nil)
   }
 
-  class func delete(url: String, headers: Dictionary<String, String>) -> Agent {
+  class func delete(url: String, headers: Headers) -> Agent {
     return Agent(method: "DELETE", url: url, headers: headers)
   }
 
-  class func delete(url: String, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func delete(url: String, done: Response) -> Agent {
     return Agent.delete(url).end(done)
   }
 
-  class func delete(url: String, headers: Dictionary<String, String>, done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
+  class func delete(url: String, headers: Headers, done: Response) -> Agent {
     return Agent.delete(url, headers: headers).end(done)
   }
 
@@ -140,48 +141,35 @@ class Agent {
    * Methods
    */
 
-  func send(data: Dictionary<String, AnyObject>) -> Agent {
+  func send(data: Data) -> Agent {
     var error: NSError?
-    var json = NSJSONSerialization.dataWithJSONObject(data, options: NSJSONWritingOptions(0), error: &error)
-    // TODO: handle error
+    let json = NSJSONSerialization.dataWithJSONObject(data, options: nil, error: &error)
     self.set("Content-Type", value: "application/json")
-    self.request!.HTTPBody = json
+    self.request.HTTPBody = json
     return self
   }
 
   func set(header: String, value: String) -> Agent {
-    self.request!.setValue(value, forHTTPHeaderField: header)
+    self.request.setValue(value, forHTTPHeaderField: header)
     return self
   }
 
-  func end(done: (NSError?, NSHTTPURLResponse?, AnyObject?) -> ()) -> Agent {
-    self.done = done
-    self.data = NSMutableData()
-    let connection = NSURLConnection(request: self.request, delegate: self, startImmediately: true)
+  func end(done: Response) -> Agent {
+    let completion = { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+      let res = response as NSHTTPURLResponse!
+      if (error) {
+        done(res, data, error)
+        return
+      }
+      var error: NSError?
+      var json: AnyObject!
+      if (data) {
+        json = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error)
+      }
+      done(res, json, error)
+    }
+    NSURLConnection.sendAsynchronousRequest(self.request, queue: self.queue, completionHandler: completion)
     return self
-  }
-
-  /**
-   * Delegate
-   */
-
-  func connection(connection: NSURLConnection!, didReceiveData data: NSData!) {
-    self.data!.appendData(data)
-  }
-
-  func connection(connection: NSURLConnection!, didReceiveResponse response: NSHTTPURLResponse!) {
-    self.response = response
-  }
-  
-  func connectionDidFinishLoading(connection: NSURLConnection!) {
-    var error: NSError?
-    var json: AnyObject! = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(0), error: &error)
-    // TODO: handle error
-    self.done(nil, self.response, json)
-  }
-  
-  func connection(connection: NSURLConnection!, didFailWithError error: NSError!) {
-    self.done(error, nil, nil)
   }
 
 }

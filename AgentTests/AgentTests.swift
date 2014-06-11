@@ -20,17 +20,18 @@ class AgentTests: XCTestCase {
 
   func testGetShouldSucceed () {
     var wait: Bool = true
-    Agent.get("http://headers.jsontest.com", done: { (error: NSError?, response: NSHTTPURLResponse?, _) -> () in
+    let done: Agent.Response = { (response: NSHTTPURLResponse!, _, error: NSError!) -> Void in
       XCTAssertNil(error)
       XCTAssertEqual(response!.statusCode, 200)
       wait = false
-    })
+    }
+    Agent.get("http://headers.jsontest.com", done: done)
     waitFor(&wait)
   }
-
+  
   func testGetShouldSucceedWithJSON () {
     var wait: Bool = true
-    let done = { (error: NSError?, response: NSHTTPURLResponse?, data: AnyObject?) -> () in
+    let done: Agent.Response = { (response: NSHTTPURLResponse!, data: Agent.Data!, error: NSError!) -> Void in
       XCTAssertNil(error)
       XCTAssertEqual(response!.statusCode, 200)
       let json = data! as Dictionary<String, String>
@@ -43,41 +44,45 @@ class AgentTests: XCTestCase {
 
   func testGetShouldFail () {
     var wait: Bool = true
-    Agent.get("http://nope.christofferhallas.com",
-        done: { (error: NSError?, response: NSHTTPURLResponse?, _) -> () in
+    let done = { (_: NSHTTPURLResponse!, data: Agent.Data!, error: NSError!) -> Void in
+      println(error)
       XCTAssertNotNil(error)
       wait = false
-    })
+    }
+    Agent.get("http://nope.example.com", done: done)
     waitFor(&wait)
   }
 
   func testPostShouldFail () {
     var wait: Bool = true
-    Agent.post("http://nope.christofferhallas.com",
-      done: { (error: NSError?, response: NSHTTPURLResponse?, _) -> () in
-        XCTAssertNotNil(error)
-        wait = false
-      })
+    let done = { (_: NSHTTPURLResponse!, data: Agent.Data!, error: NSError!) -> Void in
+      println(error)
+      XCTAssertNotNil(error)
+      wait = false
+    }
+    Agent.post("http://nope.example.com", done: done)
     waitFor(&wait)
   }
-
+  
   func testPutShouldFail () {
     var wait: Bool = true
-    Agent.put("http://nope.christofferhallas.com",
-      done: { (error: NSError?, response: NSHTTPURLResponse?, _) -> () in
-        XCTAssertNotNil(error)
-        wait = false
-      })
+    let done = { (_: NSHTTPURLResponse!, data: Agent.Data!, error: NSError!) -> Void in
+      println(error)
+      XCTAssertNotNil(error)
+      wait = false
+    }
+    Agent.put("http://nope.example.com", done: done)
     waitFor(&wait)
   }
-
+  
   func testDeleteShouldFail () {
     var wait: Bool = true
-    Agent.delete("http://nope.christofferhallas.com",
-      done: { (error: NSError?, response: NSHTTPURLResponse?, _) -> () in
-        XCTAssertNotNil(error)
-        wait = false
-      })
+    let done = { (_: NSHTTPURLResponse!, data: Agent.Data!, error: NSError!) -> Void in
+      println(error)
+      XCTAssertNotNil(error)
+      wait = false
+    }
+    Agent.delete("http://nope.example.com", done: done)
     waitFor(&wait)
   }
 

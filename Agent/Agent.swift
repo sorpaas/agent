@@ -25,7 +25,7 @@ class Agent {
    * Initialize
    */
 
-  init(method: String, url: String, headers: Dictionary<String, String>?) {
+  init(method: String, url: String, headers: Headers?) {
     self.request = NSMutableURLRequest(URL: NSURL(string: url))
     self.request.HTTPMethod = method;
     if (headers) {

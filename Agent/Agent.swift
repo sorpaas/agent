@@ -11,6 +11,7 @@ import Foundation
 class Agent {
 
   typealias Headers = Dictionary<String, String>
+  typealias Parameters = Dictionary<String, String>
   typealias Data = AnyObject!
   typealias Response = (NSHTTPURLResponse!, Data!, NSError!) -> Void
 
@@ -51,6 +52,39 @@ class Agent {
 
   class func get(url: String, headers: Headers, done: Response) -> Agent {
     return Agent.get(url, headers: headers).end(done)
+  }
+
+  class func get(url: String, headers: Headers, params: Parameters) -> Agent {
+    if params.isEmpty {
+      return Agent.get(url, headers: headers).end(done)
+    }
+
+    var paramStrs: Array<String> = []
+    for (key, value) in params {
+      paramStrs.append(key + "=" + value.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet()))
+    }
+
+    var str: String = url + "?"
+    for (idx, item) in enumerate(paramStrs) {
+      str += item
+      if idx < self.count - 1 {
+        str += "&"
+      }
+    }
+
+    return Agent.get(str, headers: headers)
+  }
+
+  class func get(url: String, params: Parameters) -> Agent {
+    return Agent.get(str, headers: nil, params: params)
+  }
+
+  class func get(url: String, headers: Headers, params: Parameters, done: Response) -> Agent {
+    return Agent.get(url, headers: headers, params: params).end(done)
+  }
+
+  class func get(url: String, params: Parameters, done: Response) -> Agent {
+    return Agent.get(url, params: params).end(done)
   }
 
   /**
